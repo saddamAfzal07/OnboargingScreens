@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:im_stepper/stepper.dart';
 import 'package:onboarding/feature/presentation/widget/vartical_space.dart';
 import 'package:onboarding/home.dart';
 import 'package:onboarding/model/onboarding_model.dart';
@@ -26,6 +27,9 @@ class _OnBoardingState extends State<OnBoarding> {
     super.dispose();
   }
 
+  int dotCount = 4;
+  int activeStep = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,27 +51,52 @@ class _OnBoardingState extends State<OnBoarding> {
                     itemBuilder: (_, i) {
                       return Column(
                         children: [
-                          SvgPicture.asset(
-                            contents[i].image,
+                          SizedBox(
                             width: 280.w,
                             height: 272.h,
+                            child: SvgPicture.asset(
+                              contents[i].image,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          VerticalSpace(space: 32.h),
+                          DotStepper(
+                            dotCount: dotCount,
+                            activeStep: activeStep,
+                            shape: Shape.stadium,
+                            dotRadius: 8,
+                            onDotTapped: (dotIndex) {
+                              setState(() {
+                                activeStep = dotIndex;
+                              });
+                            },
+                            fixedDotDecoration: const FixedDotDecoration(
+                              color: Color.fromRGBO(218, 218, 218, 1),
+                            ),
+                            indicatorDecoration: const IndicatorDecoration(
+                              color: Colors.black87,
+                            ),
+                            spacing: 6,
+                            indicator: Indicator.worm,
                           ),
                           VerticalSpace(space: 32.h),
                           Text(
                             contents[i].title,
-                            style: TextStyle(
-                                fontSize: 18.sp, fontWeight: FontWeight.w600),
+                            style: GoogleFonts.notoSans(
+                                textStyle: TextStyle(
+                                    fontSize: 18.sp,
+                                    fontWeight: FontWeight.w600)),
                           ),
                           VerticalSpace(space: 32.h),
-                          Text(
-                            contents[i].description,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w400,
-                              color: const Color(0XFF6F6F6F),
-                            ),
-                          ),
+                          Text(contents[i].description,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.notoSans(
+                                textStyle: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.w400,
+                                  color: const Color(0XFF6F6F6F),
+                                ),
+                              )),
                         ],
                       );
                     }),
@@ -84,9 +113,8 @@ class _OnBoardingState extends State<OnBoarding> {
                           decoration: BoxDecoration(
                               color: Colors.black,
                               borderRadius: BorderRadius.circular(12)),
-                          margin: EdgeInsets.symmetric(horizontal: 24.w),
                           height: 48.h,
-                          width: 312.w,
+                          width: double.infinity,
                           child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -121,16 +149,21 @@ class _OnBoardingState extends State<OnBoarding> {
                           child: Container(
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: const Color(0XFFE5E5E5),
+                              border: Border.all(
+                                color: const Color(0XFFE5E5E5),
+                              ),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             height: 48.h,
                             width: 81.h,
-                            child: const Text(
-                              "skip",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                color: Color(0XFF1C1C1C),
+                            child: Text(
+                              "Skip",
+                              style: GoogleFonts.notoSans(
+                                textStyle: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0XFF1C1C1C),
+                                ),
                               ),
                             ),
                           ),
@@ -138,7 +171,10 @@ class _OnBoardingState extends State<OnBoarding> {
                         GestureDetector(
                           onTap: () {
                             if (currentIndex == contents.length - 1) {
-                            } else {
+                            } else if (activeStep < dotCount - 1) {
+                              setState(() {
+                                activeStep++;
+                              });
                               _pagecontroller.nextPage(
                                   duration: const Duration(milliseconds: 100),
                                   curve: Curves.bounceIn);
@@ -152,14 +188,14 @@ class _OnBoardingState extends State<OnBoarding> {
                             ),
                             height: 48.h,
                             width: 81.h,
-                            child: Text(
-                              "Next",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 14.sp,
-                                color: Color(0XFFFFFFFF),
-                              ),
-                            ),
+                            child: Text("Next",
+                                style: GoogleFonts.notoSans(
+                                  textStyle: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14.sp,
+                                    color: const Color(0XFFFFFFFF),
+                                  ),
+                                )),
                           ),
                         )
                       ],
